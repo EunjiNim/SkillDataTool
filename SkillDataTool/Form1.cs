@@ -286,9 +286,9 @@ namespace SkillDataTool
             // 변수에 텍스트 박스에 입력한 수치를 넣어줌
             this.Index_Num = this.textBox1.Text;
 
+            // 인덱스 넘버로 Skill Data를 찾아옴
             object[] SkillDatasRow = new object[1];
             SkillData.TryGetValue(Index_Num, out SkillDatasRow);
-
 
             // 검색한 키가 없는 경우에는 텍스트 박스를 지우고, 에러 팝업을 띄워줌
             if (!SkillData.ContainsKey(Index_Num))
@@ -298,12 +298,9 @@ namespace SkillDataTool
                 return;
             }
 
-            this.SkillEffect_Num = SkillDatasRow.ToArray()[10].ToString();
-
             // 재검색시마다 리스트가 쌓이므로 버튼을 클릭할때마다 초기화 해 줌
             this.comboBox1.Items.Clear();
             GridViewInData.Clear();
-
 
             // 컬럼 위치가 변경될 수 있으므로 리스트에 넣어 이름을 찾고 그 컬럼의 인덱스를 반환할 수 있도록 함
             object[] SkillDataIndex = new object[1];
@@ -313,6 +310,8 @@ namespace SkillDataTool
             object[] Search_SkillData = new object[1];
             SkillData.TryGetValue(Index_Num, out Search_SkillData);
 
+            // 스킬 데이터에서 스킬 이펙트 넘버 받아옴
+            SkillEffect_Num = SkillDatasRow.ToArray()[SkillDataIndex.ToList().IndexOf("link_skill_effect_id")].ToString();
 
             // 인덱스를 뽑기위해 리스트에 넣어줌
             List<string> SkillIndexList = new List<string>();
@@ -324,7 +323,6 @@ namespace SkillDataTool
             // 각각의 변수에 맞는 인덱스를 넣어줌
             skill_name = SkillIndexList.IndexOf("skill_name");
             skill_cooltime = SkillIndexList.IndexOf("skill_cooltime");
-
 
             // SkillEffectLevelGroupData는 찾고자 하는 레벨을 알아야 데이터를 가지고 올 수가 있음
             List<object[]> ItemDataIndex = new List<object[]>();
@@ -354,7 +352,6 @@ namespace SkillDataTool
             // 콤보 박스에 레벨 추출한 레벨 리스트를 넣어줌
             this.comboBox1.Items.AddRange(Level_List.ToArray());
 
-
             // 검색한 인덱스의 row 데이터를 모두 그리드 뷰에 넣어줌
             //GridViewInData.Rows.Add(testdata[1]); 
             foreach (var test in Search_SkillEffectLevelData)
@@ -362,11 +359,9 @@ namespace SkillDataTool
                 GridViewInData.Rows.Add(test);
             }
 
-
             // 텍스트 박스에 Skill.xlsx 의 내용을 띄워줌
             this.textBox2.Text = Search_SkillData[skill_name].ToString();
             this.textBox3.Text = Search_SkillData[skill_cooltime].ToString();
-
 
             // 데이터 그리드 뷰에 모아둔 데이터를 띄워 줌
             this.dataGridView1.DataSource = GridViewInData;
