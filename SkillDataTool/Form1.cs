@@ -12,7 +12,6 @@ using Excel = Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Interop.Excel;
 using System.Drawing.Text;
 
-
 using Application = System.Windows.Forms.Application;
 using DataTable = System.Data.DataTable;
 using DocumentFormat.OpenXml;
@@ -28,10 +27,14 @@ namespace SkillDataTool
         private string Skill = string.Empty;
         private string SkillEffect = string.Empty;
         private string SkillEffectLevelGroup = string.Empty;
+        private string SkillEffectOperation = string.Empty;
 
         // 사용자가 입력한 인덱스를 저장
         private string Index_Num = string.Empty;
+
+        // 사용자가 입력한 인덱스를 바탕으로 연결된 인덱스를 받아옴
         private string SkillEffect_Num = string.Empty;
+        private string SkillEffectOperation_Num = string.Empty;
 
         private int Level_Index = 0;
 
@@ -39,19 +42,16 @@ namespace SkillDataTool
         private string Sheet_Name = "Table$";
 
         // 엑셀에서 오픈한 데이터를 딕셔너리 구조로 집어넣음. Value는 오브젝트 배열 형식으로 지정, 검색 시 각각의 컬럼 값에 접근하기 쉽도록 하기 위함
-        private Dictionary<string, object[]> SkillData = new Dictionary<string, object[]>();
-        private Dictionary<string, object[]> SkillEffectData = new Dictionary<string, object[]>();
+        private Dictionary<string, object[]>? SkillData = new Dictionary<string, object[]>();
+        private Dictionary<string, object[]>? SkillEffectData = new Dictionary<string, object[]>();
+        private Dictionary<string, object[]>? SkillEffectOperationData = new Dictionary<string, object[]>();
 
         // SkillEffectLevelGroup은 동일한 키 값을 가지므로 다중값 딕셔너리를 구현하기 위해 Value를 List 형식으로 넣어줌
-        private Dictionary<string, List<object[]>> SkillEffectLevelGroupData = new Dictionary<string, List<object[]>>();
+        private Dictionary<string, List<object[]>>? SkillEffectLevelGroupData = new Dictionary<string, List<object[]>>();
 
         // 필요한 데이터만 따로 모아 그리드 뷰에 띄워주기 위해 사용
-        private DataTable GridViewInData = new DataTable();
-
-        // Col 위치가 변경될수 있으므로 명칭을 기준으로 인덱스를 그때그때 잡아주기 위해 필요한 변수
-        int skill_name = 0;
-        int skill_cooltime = 0;
-
+        private DataTable? GridViewInData = new DataTable();
+        private DataTable? GridViewOperationData = new DataTable();
 
         public Form1()
         {
@@ -108,7 +108,7 @@ namespace SkillDataTool
                                     this.Skill = string.Format(this.Excel07Constring, str, 0);
                                 }
                             }
-                            else if (str.Contains("SkillEffect.xlsx"))
+                            else if (str.Contains("SkillEffectGroup.xlsx"))
                             {
                                 if (this.SkillEffect.Length != 0)
                                 {
@@ -130,6 +130,18 @@ namespace SkillDataTool
                                 else
                                 {
                                     this.SkillEffectLevelGroup = string.Format(this.Excel07Constring, str, 0);
+                                }
+                            }
+                            else if (str.Contains("SkillEffectOperation.xlsx"))
+                            {
+                                if (this.SkillEffectOperation.Length != 0)
+                                {
+                                    Console.WriteLine("이미 생성된 데이터가 있습니다.");
+
+                                }
+                                else
+                                {
+                                    this.SkillEffectOperation = string.Format(this.Excel07Constring, str, 0);
                                 }
                             }
                             else
@@ -277,6 +289,40 @@ namespace SkillDataTool
                     }
                 }
             }
+
+            using (OleDbConnection conn = new OleDbConnection(this.SkillEffectOperation))
+            {
+                using (OleDbCommand comm = conn.CreateCommand())
+                {
+                    using (OleDbDataAdapter adap = new OleDbDataAdapter())
+                    {
+                        // SkillEffectOperation 데이터 담기
+                        DataTable dataTable4 = new DataTable();
+                        comm.CommandText = string.Concat("SELECT * From [", this.Sheet_Name, "]");
+                        comm.Connection = conn;
+                        conn.Open();
+                        adap.SelectCommand = comm;
+                        adap.Fill(dataTable4);
+
+                        foreach (DataRow row in dataTable4.Rows)
+                        {
+                            if (row.Table.Rows.IndexOf(row) > 7)
+                            {
+                                if (!SkillEffectOperationData.ContainsKey(row.ItemArray[0].ToString()))
+                                {
+                                    SkillEffectOperationData.Add(row.ItemArray[0].ToString(), row.ItemArray);
+                                }
+                                else
+                                {
+                                    MessageBox.Show("중복되는 키 값이 있습니다. " + row.ItemArray[0].ToString() + " 데이터를 확인해 주세요.");
+                                }
+                            }
+                            conn.Close();
+                        }
+                    }
+                }
+            }
+
         }
 
 
@@ -287,7 +333,7 @@ namespace SkillDataTool
             this.Index_Num = this.textBox1.Text;
 
             // 인덱스 넘버로 Skill Data를 찾아옴
-            object[] SkillDatasRow = new object[1];
+            object[]? SkillDatasRow = new object[1];
             SkillData.TryGetValue(Index_Num, out SkillDatasRow);
 
             // 검색한 키가 없는 경우에는 텍스트 박스를 지우고, 에러 팝업을 띄워줌
@@ -303,33 +349,36 @@ namespace SkillDataTool
             GridViewInData.Clear();
 
             // 컬럼 위치가 변경될 수 있으므로 리스트에 넣어 이름을 찾고 그 컬럼의 인덱스를 반환할 수 있도록 함
-            object[] SkillDataIndex = new object[1];
+            object[]? SkillDataIndex = new object[1];
             SkillData.TryGetValue("skill_id", out SkillDataIndex);
 
             // 인덱스에 맞는 스킬 정보를 찾아줌
-            object[] Search_SkillData = new object[1];
+            object[]? Search_SkillData = new object[1];
             SkillData.TryGetValue(Index_Num, out Search_SkillData);
 
             // 스킬 데이터에서 스킬 이펙트 넘버 받아옴
             SkillEffect_Num = SkillDatasRow.ToArray()[SkillDataIndex.ToList().IndexOf("link_skill_effect_id")].ToString();
 
+            // 스킬 이펙트 데이터 인덱스로 오퍼레이션 인덱스를 찾아내기 위해 SkillEffectGroup 시트 참고
+            object[]? search_SkillEffectData = new object[1];
+            SkillEffectData.TryGetValue(SkillEffect_Num, out search_SkillEffectData);
+
+            // Skill Effect Operation 데이터 뽑아냄
+            SkillEffectOperation_Num = search_SkillEffectData.ToArray()[SkillEffectData.ToArray()[1].Value.ToList().IndexOf("link_skill_effect_operation_id")].ToString();
+
             // 인덱스를 뽑기위해 리스트에 넣어줌
-            List<string> SkillIndexList = new List<string>();
+            List<string>? SkillIndexList = new List<string>();
             foreach (Object list in SkillDataIndex)
             {
                 SkillIndexList.Add(list.ToString());
             }
 
-            // 각각의 변수에 맞는 인덱스를 넣어줌
-            skill_name = SkillIndexList.IndexOf("skill_name");
-            skill_cooltime = SkillIndexList.IndexOf("skill_cooltime");
-
             // SkillEffectLevelGroupData는 찾고자 하는 레벨을 알아야 데이터를 가지고 올 수가 있음
-            List<object[]> ItemDataIndex = new List<object[]>();
+            List<object[]>? ItemDataIndex = new List<object[]>();
             SkillEffectLevelGroupData.TryGetValue("skill_effect_level_group_id", out ItemDataIndex);
 
             // skill 시트에서 찾아낸 스킬 이펙트의 인덱스를 뽑아내고 이 인덱스로 SkillEffectLevelGroup 시트에서 데이터를 찾음
-            List<object[]> Search_SkillEffectLevelData = new List<object[]>();
+            List<object[]>? Search_SkillEffectLevelData = new List<object[]>();
             SkillEffectLevelGroupData.TryGetValue(SkillEffect_Num, out Search_SkillEffectLevelData);
 
             // 그리드 뷰에 컬럼 값이 없을때만 내용을 넣어줌
@@ -342,11 +391,38 @@ namespace SkillDataTool
                 }
             }
 
-            List<string> Level_List = new List<string>();
-            // SkillEffectLevelGroup의 레벨 리스트를 콤보박스에 넣어줌
-            foreach (var item in Search_SkillEffectLevelData)
+            // Skill Effect Operation 정보를 데이터 그리드 뷰에 넣어주기 위해 인덱스 검색
+            object[]? SkillEffectOperation_Result = new object[1];
+            SkillEffectOperationData.TryGetValue(SkillEffectOperation_Num, out SkillEffectOperation_Result);
+
+
+            // 몬스터 스킬은 operation 정보에 없으므로 검색한 후 값이 있을때에만 그리드 뷰에 뿌릴 예정
+            if(SkillEffectOperation_Result != null)
             {
-                Level_List.Add(item[4].ToString());
+
+            }
+
+
+
+           /* if(GridViewOperationData.Columns.Count == 0)
+            {
+                for (int i = 0; i < SkillEffectOperationData.)
+            }
+            */
+
+            int z = 0;
+
+            List<string>? Level_List = new List<string>();
+
+            // 레벨 단계가 없을수도 있으므로 예외처리 함
+            if (Search_SkillEffectLevelData.Count != 0)
+            {
+                // SkillEffectLevelGroup의 레벨 리스트를 콤보박스에 넣어줌
+                foreach (var item in Search_SkillEffectLevelData)
+                {
+                    Level_List.Add(item[ItemDataIndex[0].ToList().IndexOf("level")].ToString());
+                }
+
             }
 
             // 콤보 박스에 레벨 추출한 레벨 리스트를 넣어줌
@@ -354,14 +430,15 @@ namespace SkillDataTool
 
             // 검색한 인덱스의 row 데이터를 모두 그리드 뷰에 넣어줌
             //GridViewInData.Rows.Add(testdata[1]); 
-            foreach (var test in Search_SkillEffectLevelData)
+            foreach (var SkillEffectResualtData in Search_SkillEffectLevelData)
             {
-                GridViewInData.Rows.Add(test);
+                GridViewInData.Rows.Add(SkillEffectResualtData);
             }
 
-            // 텍스트 박스에 Skill.xlsx 의 내용을 띄워줌
-            this.textBox2.Text = Search_SkillData[skill_name].ToString();
-            this.textBox3.Text = Search_SkillData[skill_cooltime].ToString();
+            // 텍스트 박스에 Skill.xlsx 의 내용을 띄워줌 
+            // 쓸데없는 변수 할당은 줄이고 리스트에서 바로 인덱스를 뽑아서 넣어줌. 컬럼 명으로 인덱스를 뽑으면 추후 컬럼 위치가 변경되어도 원하는 값을 가져올 수 있기 때문
+            this.textBox2.Text = Search_SkillData[SkillIndexList.IndexOf("skill_name")].ToString();
+            this.textBox3.Text = Search_SkillData[SkillIndexList.IndexOf("skill_cooltime")].ToString();
 
             // 데이터 그리드 뷰에 모아둔 데이터를 띄워 줌
             this.dataGridView1.DataSource = GridViewInData;
