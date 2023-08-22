@@ -60,7 +60,7 @@ namespace SkillDataTool
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            this.Text = "Skill Search Tool";
         }
 
         // 엑셀 파일 오픈 버튼 
@@ -347,6 +347,7 @@ namespace SkillDataTool
             // 재검색시마다 리스트가 쌓이므로 버튼을 클릭할때마다 초기화 해 줌
             this.comboBox1.Items.Clear();
             GridViewInData.Clear();
+            GridViewOperationData.Clear();
 
             // 컬럼 위치가 변경될 수 있으므로 리스트에 넣어 이름을 찾고 그 컬럼의 인덱스를 반환할 수 있도록 함
             object[]? SkillDataIndex = new object[1];
@@ -363,8 +364,13 @@ namespace SkillDataTool
             object[]? search_SkillEffectData = new object[1];
             SkillEffectData.TryGetValue(SkillEffect_Num, out search_SkillEffectData);
 
-            // Skill Effect Operation 데이터 뽑아냄
-            SkillEffectOperation_Num = search_SkillEffectData.ToArray()[SkillEffectData.ToArray()[1].Value.ToList().IndexOf("link_skill_effect_operation_id")].ToString();
+            if (search_SkillEffectData != null)
+            {
+                // Skill Effect Operation 데이터 뽑아냄
+                SkillEffectOperation_Num = search_SkillEffectData.ToArray()[SkillEffectData.ToArray()[1].Value.ToList().IndexOf("link_skill_effect_operation_id")].ToString();
+
+            }
+
 
             // 인덱스를 뽑기위해 리스트에 넣어줌
             List<string>? SkillIndexList = new List<string>();
@@ -377,9 +383,11 @@ namespace SkillDataTool
             List<object[]>? ItemDataIndex = new List<object[]>();
             SkillEffectLevelGroupData.TryGetValue("skill_effect_level_group_id", out ItemDataIndex);
 
+
             // skill 시트에서 찾아낸 스킬 이펙트의 인덱스를 뽑아내고 이 인덱스로 SkillEffectLevelGroup 시트에서 데이터를 찾음
             List<object[]>? Search_SkillEffectLevelData = new List<object[]>();
             SkillEffectLevelGroupData.TryGetValue(SkillEffect_Num, out Search_SkillEffectLevelData);
+
 
             // 그리드 뷰에 컬럼 값이 없을때만 내용을 넣어줌
             if (GridViewInData.Columns.Count == 0)
@@ -395,22 +403,30 @@ namespace SkillDataTool
             object[]? SkillEffectOperation_Result = new object[1];
             SkillEffectOperationData.TryGetValue(SkillEffectOperation_Num, out SkillEffectOperation_Result);
 
+            object[]? SkillEffectOperation_Column = new object[1];
+            SkillEffectOperationData.TryGetValue("스킬 효과 작동 아이디", out SkillEffectOperation_Column);
 
-            // 몬스터 스킬은 operation 정보에 없으므로 검색한 후 값이 있을때에만 그리드 뷰에 뿌릴 예정
-            if(SkillEffectOperation_Result != null)
+            // 몬스터 스킬은 operation 정보에 없으므로 검색한 후 값이 있을때에만 그리드 뷰에 넣어 줌 
+            if (SkillEffectOperation_Result != null)
             {
-
+                this.dataGridView2.Show();
+                // 그리드 뷰에 컬럼이 없을때만 값을 넣어줌
+                if (GridViewOperationData.Columns.Count == 0)
+                {
+                    for (int i = 0; i < SkillEffectOperation_Column.Length; ++i)
+                    {
+                        GridViewOperationData.Columns.Add(SkillEffectOperation_Column.ToArray()[i].ToString());
+                    }
+                }
+                // 검색된 오퍼레이션 정보를 넣어줌
+                GridViewOperationData.Rows.Add(SkillEffectOperation_Result);
+                this.dataGridView2.DataSource = GridViewOperationData;
             }
-
-
-
-           /* if(GridViewOperationData.Columns.Count == 0)
+            else
             {
-                for (int i = 0; i < SkillEffectOperationData.)
+                // 데이터가 없으면 그리드 뷰를 아예 감춰버림
+                this.dataGridView2.Hide();
             }
-            */
-
-            int z = 0;
 
             List<string>? Level_List = new List<string>();
 
@@ -442,6 +458,10 @@ namespace SkillDataTool
 
             // 데이터 그리드 뷰에 모아둔 데이터를 띄워 줌
             this.dataGridView1.DataSource = GridViewInData;
+            this.dataGridView1.AllowUserToOrderColumns = false;
+
+            // 쓸데없이 나오는 마지막 ROW를 감춤
+            this.dataGridView2.AllowUserToAddRows = false;
 
         }
 

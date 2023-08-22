@@ -42,6 +42,8 @@
             label3 = new Label();
             dataGridView2 = new DataGridView();
             label4 = new Label();
+            label5 = new Label();
+            label6 = new Label();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
             SuspendLayout();
@@ -68,10 +70,12 @@
             // 
             // dataGridView1
             // 
+            dataGridView1.AllowUserToAddRows = false;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView1.Location = new Point(15, 171);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.RowTemplate.Height = 25;
+            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.Size = new Size(773, 193);
             dataGridView1.TabIndex = 2;
             // 
@@ -154,26 +158,48 @@
             // dataGridView2
             // 
             dataGridView2.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView2.Location = new Point(15, 417);
+            dataGridView2.Location = new Point(15, 396);
             dataGridView2.Name = "dataGridView2";
             dataGridView2.RowTemplate.Height = 25;
-            dataGridView2.Size = new Size(773, 86);
+            dataGridView2.Size = new Size(773, 139);
             dataGridView2.TabIndex = 12;
             // 
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(15, 399);
+            label4.Location = new Point(17, 378);
             label4.Name = "label4";
             label4.Size = new Size(120, 15);
             label4.TabIndex = 13;
             label4.Text = "Skill Effect Operation";
             // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Font = new Font("맑은 고딕", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            label5.Location = new Point(511, 14);
+            label5.Name = "label5";
+            label5.Size = new Size(43, 19);
+            label5.TabIndex = 14;
+            label5.Text = "Index";
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Font = new Font("맑은 고딕", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            label6.Location = new Point(605, 43);
+            label6.Name = "label6";
+            label6.Size = new Size(108, 19);
+            label6.TabIndex = 15;
+            label6.Text = "Skill Effect Level";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 523);
+            ClientSize = new Size(800, 547);
+            Controls.Add(label6);
+            Controls.Add(label5);
             Controls.Add(label4);
             Controls.Add(dataGridView2);
             Controls.Add(label3);
@@ -213,5 +239,7 @@
         private Label label3;
         private DataGridView dataGridView2;
         private Label label4;
+        private Label label5;
+        private Label label6;
     }
 }
