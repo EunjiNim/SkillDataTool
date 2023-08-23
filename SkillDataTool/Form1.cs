@@ -16,9 +16,13 @@ using Application = System.Windows.Forms.Application;
 using DataTable = System.Data.DataTable;
 using DocumentFormat.OpenXml;
 
+using MetroFramework.Forms;
+
+
+
 namespace SkillDataTool
 {
-    public partial class Form1 : Form
+    public partial class Form1 : MetroForm
     {
         private string Excel07Constring = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties='Excel 8.0;HDR=NO;IMEX=1;'";
 
@@ -371,7 +375,6 @@ namespace SkillDataTool
 
             }
 
-
             // ¿Œµ¶Ω∫∏¶ ªÃ±‚¿ß«ÿ ∏ÆΩ∫∆Æø° ≥÷æÓ¡‹
             List<string>? SkillIndexList = new List<string>();
             foreach (Object list in SkillDataIndex)
@@ -484,5 +487,6 @@ namespace SkillDataTool
             this.dataGridView1.DataSource = GridViewInData;
 
         }
+
     }
 }

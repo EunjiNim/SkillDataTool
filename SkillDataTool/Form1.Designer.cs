@@ -42,15 +42,15 @@
             label3 = new Label();
             dataGridView2 = new DataGridView();
             label4 = new Label();
-            label5 = new Label();
             label6 = new Label();
+            metroLabel1 = new MetroFramework.Controls.MetroLabel();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
             SuspendLayout();
             // 
             // button1
             // 
-            button1.Location = new Point(12, 12);
+            button1.Location = new Point(14, 93);
             button1.Name = "button1";
             button1.Size = new Size(76, 36);
             button1.TabIndex = 0;
@@ -60,7 +60,7 @@
             // 
             // button2
             // 
-            button2.Location = new Point(12, 54);
+            button2.Location = new Point(14, 135);
             button2.Name = "button2";
             button2.Size = new Size(76, 39);
             button2.TabIndex = 1;
@@ -72,7 +72,7 @@
             // 
             dataGridView1.AllowUserToAddRows = false;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(15, 171);
+            dataGridView1.Location = new Point(14, 262);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.RowTemplate.Height = 25;
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -83,21 +83,21 @@
             // 
             listBox1.FormattingEnabled = true;
             listBox1.ItemHeight = 15;
-            listBox1.Location = new Point(94, 12);
+            listBox1.Location = new Point(104, 95);
             listBox1.Name = "listBox1";
             listBox1.Size = new Size(318, 79);
             listBox1.TabIndex = 3;
             // 
             // textBox1
             // 
-            textBox1.Location = new Point(560, 12);
+            textBox1.Location = new Point(559, 95);
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(142, 23);
             textBox1.TabIndex = 4;
             // 
             // button3
             // 
-            button3.Location = new Point(719, 12);
+            button3.Location = new Point(718, 95);
             button3.Name = "button3";
             button3.Size = new Size(69, 23);
             button3.TabIndex = 5;
@@ -108,7 +108,7 @@
             // comboBox1
             // 
             comboBox1.FormattingEnabled = true;
-            comboBox1.Location = new Point(719, 41);
+            comboBox1.Location = new Point(718, 124);
             comboBox1.Name = "comboBox1";
             comboBox1.Size = new Size(69, 23);
             comboBox1.TabIndex = 6;
@@ -117,7 +117,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(12, 153);
+            label1.Location = new Point(14, 244);
             label1.Name = "label1";
             label1.Size = new Size(131, 15);
             label1.TabIndex = 7;
@@ -125,7 +125,7 @@
             // 
             // textBox2
             // 
-            textBox2.Location = new Point(17, 117);
+            textBox2.Location = new Point(14, 201);
             textBox2.Name = "textBox2";
             textBox2.Size = new Size(163, 23);
             textBox2.TabIndex = 8;
@@ -133,7 +133,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(17, 99);
+            label2.Location = new Point(14, 183);
             label2.Name = "label2";
             label2.Size = new Size(65, 15);
             label2.TabIndex = 9;
@@ -141,7 +141,7 @@
             // 
             // textBox3
             // 
-            textBox3.Location = new Point(213, 117);
+            textBox3.Location = new Point(215, 201);
             textBox3.Name = "textBox3";
             textBox3.Size = new Size(144, 23);
             textBox3.TabIndex = 10;
@@ -149,7 +149,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(213, 99);
+            label3.Location = new Point(215, 183);
             label3.Name = "label3";
             label3.Size = new Size(56, 15);
             label3.TabIndex = 11;
@@ -158,7 +158,7 @@
             // dataGridView2
             // 
             dataGridView2.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView2.Location = new Point(15, 396);
+            dataGridView2.Location = new Point(14, 485);
             dataGridView2.Name = "dataGridView2";
             dataGridView2.RowTemplate.Height = 25;
             dataGridView2.Size = new Size(773, 139);
@@ -167,39 +167,40 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(17, 378);
+            label4.Location = new Point(14, 467);
             label4.Name = "label4";
             label4.Size = new Size(120, 15);
             label4.TabIndex = 13;
             label4.Text = "Skill Effect Operation";
             // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.Font = new Font("맑은 고딕", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            label5.Location = new Point(511, 14);
-            label5.Name = "label5";
-            label5.Size = new Size(43, 19);
-            label5.TabIndex = 14;
-            label5.Text = "Index";
-            // 
             // label6
             // 
             label6.AutoSize = true;
             label6.Font = new Font("맑은 고딕", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            label6.Location = new Point(605, 43);
+            label6.Location = new Point(604, 126);
             label6.Name = "label6";
             label6.Size = new Size(108, 19);
             label6.TabIndex = 15;
             label6.Text = "Skill Effect Level";
             // 
+            // metroLabel1
+            // 
+            metroLabel1.AutoSize = true;
+            metroLabel1.Font = new Font("맑은 고딕", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            metroLabel1.Location = new Point(513, 95);
+            metroLabel1.Name = "metroLabel1";
+            metroLabel1.Size = new Size(40, 19);
+            metroLabel1.TabIndex = 16;
+            metroLabel1.Text = "Index";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 547);
+            AutoScroll = true;
+            ClientSize = new Size(791, 639);
+            Controls.Add(metroLabel1);
             Controls.Add(label6);
-            Controls.Add(label5);
             Controls.Add(label4);
             Controls.Add(dataGridView2);
             Controls.Add(label3);
@@ -215,7 +216,7 @@
             Controls.Add(button2);
             Controls.Add(button1);
             Name = "Form1";
-            Text = "Form1";
+            TransparencyKey = Color.Empty;
             Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ((System.ComponentModel.ISupportInitialize)dataGridView2).EndInit();
@@ -239,7 +240,7 @@
         private Label label3;
         private DataGridView dataGridView2;
         private Label label4;
-        private Label label5;
         private Label label6;
+        private MetroFramework.Controls.MetroLabel metroLabel1;
     }
 }
