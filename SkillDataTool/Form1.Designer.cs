@@ -44,6 +44,8 @@
             label4 = new Label();
             label6 = new Label();
             metroLabel1 = new MetroFramework.Controls.MetroLabel();
+            saveFileDialog1 = new SaveFileDialog();
+            metroButton1 = new MetroFramework.Controls.MetroButton();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
             SuspendLayout();
@@ -193,12 +195,24 @@
             metroLabel1.TabIndex = 16;
             metroLabel1.Text = "Index";
             // 
+            // metroButton1
+            // 
+            metroButton1.Font = new Font("맑은 고딕", 11F, FontStyle.Regular, GraphicsUnit.Point);
+            metroButton1.Location = new Point(699, 196);
+            metroButton1.Name = "metroButton1";
+            metroButton1.Size = new Size(88, 28);
+            metroButton1.TabIndex = 17;
+            metroButton1.Text = "SaveFile";
+            metroButton1.UseSelectable = true;
+            metroButton1.Click += metroButton1_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
             ClientSize = new Size(791, 639);
+            Controls.Add(metroButton1);
             Controls.Add(metroLabel1);
             Controls.Add(label6);
             Controls.Add(label4);
@@ -242,5 +256,7 @@
         private Label label4;
         private Label label6;
         private MetroFramework.Controls.MetroLabel metroLabel1;
+        private SaveFileDialog saveFileDialog1;
+        private MetroFramework.Controls.MetroButton metroButton1;
     }
 }

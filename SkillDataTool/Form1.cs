@@ -150,8 +150,9 @@ namespace SkillDataTool
                             }
                             else
                             {
-                                MessageBox.Show("사용할 수 없는 문서입니다. 문서를 다시 확인해 주세요.");
-                                Application.Restart();
+                                MetroFramework.MetroMessageBox.Show(this, "사용할 수 없는 문서입니다. 문서를 다시 확인해 주세요.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning, 100);
+
+                                //Application.Restart();
                             }
 
 
@@ -163,7 +164,8 @@ namespace SkillDataTool
                 {
                     // 이미 불러온 데이터가 있을 경우 강제로 재시작해줌
                     Exception exception = ex;
-                    MessageBox.Show(ex.InnerException != null ? ex.InnerException.Message : "이미 저장된 데이터가 있어 프로그램을 다시 시작합니다.");
+                    MessageBox.Show(ex.InnerException != null ? ex.InnerException.Message : "문제가 발생하여 프로그램을 다시 시작합니다.");
+
                     Application.Restart();
 
                 }
@@ -352,6 +354,9 @@ namespace SkillDataTool
             this.comboBox1.Items.Clear();
             GridViewInData.Clear();
             GridViewOperationData.Clear();
+            // 콤보박스 텍스트 리셋
+            this.comboBox1.ResetText();
+
 
             // 컬럼 위치가 변경될 수 있으므로 리스트에 넣어 이름을 찾고 그 컬럼의 인덱스를 반환할 수 있도록 함
             object[]? SkillDataIndex = new object[1];
@@ -485,8 +490,29 @@ namespace SkillDataTool
             // 특정 레벨의 정보만 출력해 줌
             GridViewInData.Rows.Add(Search_SkillEffectLevelData[Skill_Level]);
             this.dataGridView1.DataSource = GridViewInData;
-
         }
 
+        // 파일 저장 버튼
+        private void metroButton1_Click(object sender, EventArgs e)
+        {
+            string filePath = string.Empty;
+            //string fileName = @"엑셀파일저장"  + DateHe
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Title = "저장 경로를 지정하세요.";
+            saveFileDialog.OverwritePrompt = true;
+            saveFileDialog.Filter = "Excel 통합 문서|*.xlsx";
+            saveFileDialog.InitialDirectory = @"D:\";
+            
+            if(saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                filePath = saveFileDialog.FileName;
+                // 데이터테이블에 있는 데이터를 엑셀에다 넣어주고 파일로 저장해줌
+
+                Excel.Application app = new Microsoft.Office.Interop.Excel.Application();
+                Excel.Workbook workbook = app.Workbooks.Open(filePath);
+
+            }
+        }
     }
 }
