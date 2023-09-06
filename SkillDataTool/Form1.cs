@@ -17,7 +17,9 @@ using DataTable = System.Data.DataTable;
 using DocumentFormat.OpenXml;
 
 using MetroFramework.Forms;
-
+using DocumentFormat.OpenXml.Presentation;
+using System.Runtime.InteropServices;
+using OfficeOpenXml;
 
 
 namespace SkillDataTool
@@ -389,7 +391,7 @@ namespace SkillDataTool
 
             // SkillEffectLevelGroupData는 찾고자 하는 레벨을 알아야 데이터를 가지고 올 수가 있음
             List<object[]>? ItemDataIndex = new List<object[]>();
-            SkillEffectLevelGroupData.TryGetValue("skill_effect_level_group_id", out ItemDataIndex);
+            SkillEffectLevelGroupData.TryGetValue("스킬 효과 레벨 그룹", out ItemDataIndex);
 
 
             // skill 시트에서 찾아낸 스킬 이펙트의 인덱스를 뽑아내고 이 인덱스로 SkillEffectLevelGroup 시트에서 데이터를 찾음
@@ -444,7 +446,7 @@ namespace SkillDataTool
                 // SkillEffectLevelGroup의 레벨 리스트를 콤보박스에 넣어줌
                 foreach (var item in Search_SkillEffectLevelData)
                 {
-                    Level_List.Add(item[ItemDataIndex[0].ToList().IndexOf("level")].ToString());
+                    Level_List.Add(item[ItemDataIndex[0].ToList().IndexOf("레벨")].ToString());
                 }
 
             }
@@ -458,6 +460,8 @@ namespace SkillDataTool
             {
                 GridViewInData.Rows.Add(SkillEffectResualtData);
             }
+
+            GridViewInData.Columns.Remove("Column1");
 
             // 텍스트 박스에 Skill.xlsx 의 내용을 띄워줌 
             // 쓸데없는 변수 할당은 줄이고 리스트에서 바로 인덱스를 뽑아서 넣어줌. 컬럼 명으로 인덱스를 뽑으면 추후 컬럼 위치가 변경되어도 원하는 값을 가져올 수 있기 때문
@@ -495,7 +499,7 @@ namespace SkillDataTool
         // 파일 저장 버튼
         private void metroButton1_Click(object sender, EventArgs e)
         {
-            string filePath = string.Empty;
+            /*string filePath = string.Empty;
             //string fileName = @"엑셀파일저장"  + DateHe
 
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -508,11 +512,106 @@ namespace SkillDataTool
             {
                 filePath = saveFileDialog.FileName;
                 // 데이터테이블에 있는 데이터를 엑셀에다 넣어주고 파일로 저장해줌
+ 
 
-                Excel.Application app = new Microsoft.Office.Interop.Excel.Application();
-                Excel.Workbook workbook = app.Workbooks.Open(filePath);
+                 Excel.Application app = new Excel.Application();
+                 Excel.Workbook workbook = app.Workbooks.Open(filePath, 0 ,false, 5,"","", false, Excel.XlPlatform.xlWindows, "",true, false, 0, true, false, false);
+                 Excel.Worksheet worksheet = (Excel.Worksheet)workbook.Worksheets[0];
+                 Excel.Range range = worksheet.UsedRange;
+                 app.Visible = true;
+
+                dataGridview_ExportExcel(saveFileDialog.FileName, dataGridView1, dataGridView2);
+
+            }*/
+
+            string fileName = @"SkillSearchData";
+            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+
+            using (ExcelPackage excelPackage = new ExcelPackage())
+            {
+
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add(fileName);
+
+                worksheet.Cells["A1"].LoadFromDataTable(GridViewInData, true);
+
+                worksheet.Columns.AutoFit();
+                worksheet.Columns[0].Style.Border.ToString();
+               
+
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Title = "저장 경로를 지정하세요.";
+                saveFileDialog.OverwritePrompt = true;
+                saveFileDialog.Filter = "Excel 통합 문서|*.xlsx";
+                saveFileDialog.InitialDirectory = @"D:\";
+                saveFileDialog.FileName = fileName + ".xlsx";
+
+                if(saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    FileInfo fileInfo = new FileInfo(saveFileDialog.FileName);
+                    excelPackage.SaveAs(fileInfo);
+                }
+            }
+        }
+
+        private void dataGridview_ExportExcel(string fileName, DataGridView dgv, DataGridView dgv2)
+        {
+            Excel.Application app = new Excel.Application();
+            Excel.Workbook workbook = app.Workbooks.Add(true);
+            Excel._Worksheet worksheet = workbook.Worksheets.get_Item(1) as Excel._Worksheet;
+            worksheet.Name = "SaveData";
+            
+            // 그리드 뷰에 데이터가 없을 경우 에러 팝업 출력
+            if(dgv.Rows.Count == 0 && dgv2.Rows.Count == 0)
+            {
+                MetroFramework.MetroMessageBox.Show(this, "출력할 데이터가 없습니다.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning, 100);
+            }
+
+            // 데이터 그리드 뷰 1 내용과 2 내용을 차례대로 넣어줌
+            for(int datarows = 0; datarows < dgv.Rows.Count; datarows++)
+            {
+                worksheet.Rows.Cells[datarows] = dgv.Rows[datarows].Cells;
+            }
+
+            worksheet.Columns.AutoFit();
+
+            string filetype = fileName.Split('.')[1];
+
+            if(filetype == "xls" || filetype == "xlsx")
+            {
+                workbook.SaveAs(fileName, Excel.XlFileFormat.xlWorkbookNormal, Type.Missing, Type.Missing, Type.Missing, Type.Missing,
+                Microsoft.Office.Interop.Excel.XlSaveAsAccessMode.xlExclusive, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing);
+            }
+
+            workbook.Close(Type.Missing, Type.Missing, Type.Missing);
+            app.Quit();
+            ReleaseExcelObject(app);
+            ReleaseExcelObject(workbook);
+            ReleaseExcelObject(worksheet);
+
+        }
+
+        // Marshal.ReleaseComObject 실행 함수
+        static void ReleaseExcelObject(Object obj)
+        {
+            try
+            {
+                if(obj != null)
+                {
+                    Marshal.ReleaseComObject(obj);
+                    obj = null;
+                }
 
             }
+            catch (Exception e)
+            {
+                obj = null;
+                throw e;
+            }
+            finally
+            {
+                GC.Collect();
+            }
+
         }
     }
 }
