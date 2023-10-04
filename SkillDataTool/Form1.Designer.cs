@@ -46,6 +46,8 @@
             metroLabel1 = new MetroFramework.Controls.MetroLabel();
             saveFileDialog1 = new SaveFileDialog();
             metroButton1 = new MetroFramework.Controls.MetroButton();
+            metroProgressBar1 = new MetroFramework.Controls.MetroProgressBar();
+            backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
             SuspendLayout();
@@ -74,7 +76,7 @@
             // 
             dataGridView1.AllowUserToAddRows = false;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(14, 262);
+            dataGridView1.Location = new Point(14, 342);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.RowTemplate.Height = 25;
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -119,7 +121,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(14, 244);
+            label1.Location = new Point(14, 324);
             label1.Name = "label1";
             label1.Size = new Size(131, 15);
             label1.TabIndex = 7;
@@ -127,7 +129,7 @@
             // 
             // textBox2
             // 
-            textBox2.Location = new Point(14, 201);
+            textBox2.Location = new Point(14, 289);
             textBox2.Name = "textBox2";
             textBox2.Size = new Size(163, 23);
             textBox2.TabIndex = 8;
@@ -135,7 +137,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(14, 183);
+            label2.Location = new Point(14, 271);
             label2.Name = "label2";
             label2.Size = new Size(65, 15);
             label2.TabIndex = 9;
@@ -143,7 +145,7 @@
             // 
             // textBox3
             // 
-            textBox3.Location = new Point(215, 201);
+            textBox3.Location = new Point(215, 289);
             textBox3.Name = "textBox3";
             textBox3.Size = new Size(144, 23);
             textBox3.TabIndex = 10;
@@ -151,7 +153,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(215, 183);
+            label3.Location = new Point(215, 271);
             label3.Name = "label3";
             label3.Size = new Size(56, 15);
             label3.TabIndex = 11;
@@ -160,7 +162,7 @@
             // dataGridView2
             // 
             dataGridView2.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView2.Location = new Point(14, 485);
+            dataGridView2.Location = new Point(14, 565);
             dataGridView2.Name = "dataGridView2";
             dataGridView2.RowTemplate.Height = 25;
             dataGridView2.Size = new Size(773, 139);
@@ -169,7 +171,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(14, 467);
+            label4.Location = new Point(14, 547);
             label4.Name = "label4";
             label4.Size = new Size(120, 15);
             label4.TabIndex = 13;
@@ -198,7 +200,7 @@
             // metroButton1
             // 
             metroButton1.Font = new Font("맑은 고딕", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            metroButton1.Location = new Point(699, 196);
+            metroButton1.Location = new Point(699, 284);
             metroButton1.Name = "metroButton1";
             metroButton1.Size = new Size(88, 28);
             metroButton1.TabIndex = 17;
@@ -206,12 +208,25 @@
             metroButton1.UseSelectable = true;
             metroButton1.Click += metroButton1_Click;
             // 
+            // metroProgressBar1
+            // 
+            metroProgressBar1.Location = new Point(15, 180);
+            metroProgressBar1.Name = "metroProgressBar1";
+            metroProgressBar1.Size = new Size(408, 10);
+            metroProgressBar1.TabIndex = 18;
+            metroProgressBar1.Click += metroProgressBar1_Click;
+            // 
+            // backgroundWorker1
+            // 
+            backgroundWorker1.DoWork += backgroundWorker1_DoWork;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
-            ClientSize = new Size(791, 639);
+            ClientSize = new Size(797, 713);
+            Controls.Add(metroProgressBar1);
             Controls.Add(metroButton1);
             Controls.Add(metroLabel1);
             Controls.Add(label6);
@@ -258,5 +273,7 @@
         private MetroFramework.Controls.MetroLabel metroLabel1;
         private SaveFileDialog saveFileDialog1;
         private MetroFramework.Controls.MetroButton metroButton1;
+        private MetroFramework.Controls.MetroProgressBar metroProgressBar1;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }

@@ -20,7 +20,11 @@ using MetroFramework.Forms;
 using DocumentFormat.OpenXml.Presentation;
 using System.Runtime.InteropServices;
 using OfficeOpenXml;
-
+using Range = Microsoft.Office.Interop.Excel.Range;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Office2016.Drawing.Charts;
+using System.Collections.Immutable;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 
 namespace SkillDataTool
 {
@@ -59,9 +63,22 @@ namespace SkillDataTool
         private DataTable? GridViewInData = new DataTable();
         private DataTable? GridViewOperationData = new DataTable();
 
+
+        private DataTable? ConvertGridViewInData = new DataTable();
+
+
+        private int timer_number = 0;
+
         public Form1()
         {
             InitializeComponent();
+
+
+            backgroundWorker1.WorkerReportsProgress = true;
+            backgroundWorker1.WorkerSupportsCancellation = true;
+            backgroundWorker1.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
+            backgroundWorker1.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -112,6 +129,7 @@ namespace SkillDataTool
                                 else
                                 {
                                     this.Skill = string.Format(this.Excel07Constring, str, 0);
+                                   //Workbook wb = new Workbook(this.Skill.ToString());
                                 }
                             }
                             else if (str.Contains("SkillEffectGroup.xlsx"))
@@ -153,10 +171,9 @@ namespace SkillDataTool
                             else
                             {
                                 MetroFramework.MetroMessageBox.Show(this, "사용할 수 없는 문서입니다. 문서를 다시 확인해 주세요.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning, 100);
-
-                                //Application.Restart();
                             }
 
+                            int z = 0;
 
                         }
                     }
@@ -183,6 +200,7 @@ namespace SkillDataTool
             {
                 // 엑셀 시트 경로가 들어가 있지 않음
                 MessageBox.Show("데이터가 존재하지 않습니다.");
+                this.listBox1.Items.Clear();
                 return;
             }
             if (this.SkillData.Values.Count != 0)
@@ -191,6 +209,10 @@ namespace SkillDataTool
                 MessageBox.Show("이미 로드가 완료된 데이터입니다.");
                 return;
             }
+
+
+            // backgroundWorker를 이용해서 progressbar를 실행시켜줌
+            backgroundWorker1.RunWorkerAsync();
 
             using (OleDbConnection conn = new OleDbConnection(this.Skill))
             {
@@ -276,6 +298,9 @@ namespace SkillDataTool
                         adap.SelectCommand = comm;
                         adap.Fill(dataTable3);
 
+                        // 쓸모없는 마지막 컬럼 아예 삭제. 유동적으로 바뀌는 것이 아니므로 그냥 19번 인덱스를 고정하여 넣어주었음.
+                        dataTable3.Columns.RemoveAt(19);
+
                         foreach (DataRow row in dataTable3.Rows)
                         {
                             if (row.Table.Rows.IndexOf(row) > 7)
@@ -312,6 +337,13 @@ namespace SkillDataTool
                         adap.SelectCommand = comm;
                         adap.Fill(dataTable4);
 
+                        // 빈 컬럼을 아예 지워줌 (W, X, Y, Z, AA 총 5개 컬럼)
+                        for (int i = 23; i < 28; i++)
+                        {
+                            string index = "F" + i;
+                            dataTable4.Columns.Remove(index);
+                        }
+
                         foreach (DataRow row in dataTable4.Rows)
                         {
                             if (row.Table.Rows.IndexOf(row) > 7)
@@ -324,12 +356,21 @@ namespace SkillDataTool
                                 {
                                     MessageBox.Show("중복되는 키 값이 있습니다. " + row.ItemArray[0].ToString() + " 데이터를 확인해 주세요.");
                                 }
-                            }
+                            } 
                             conn.Close();
                         }
                     }
                 }
             }
+
+            // 데이터 로딩이 완료되면 텍스트를 변경해 줌
+            if (SkillData.Count != null && SkillEffectData.Count != null && SkillEffectLevelGroupData.Count != null && SkillEffectOperationData.Count != null)
+            {
+                this.button2.Text = "Complate";
+                backgroundWorker1.CancelAsync();
+            }
+
+
 
         }
 
@@ -358,7 +399,6 @@ namespace SkillDataTool
             GridViewOperationData.Clear();
             // 콤보박스 텍스트 리셋
             this.comboBox1.ResetText();
-
 
             // 컬럼 위치가 변경될 수 있으므로 리스트에 넣어 이름을 찾고 그 컬럼의 인덱스를 반환할 수 있도록 함
             object[]? SkillDataIndex = new object[1];
@@ -406,6 +446,7 @@ namespace SkillDataTool
                 for (int i = 0; i < ItemDataIndex[0].ToArray().Length; ++i)
                 {
                     GridViewInData.Columns.Add(ItemDataIndex[0].ToArray()[i].ToString());
+                    ConvertGridViewInData.Columns.Add(ItemDataIndex[0].ToArray()[i].ToString());
                 }
             }
 
@@ -455,13 +496,10 @@ namespace SkillDataTool
             this.comboBox1.Items.AddRange(Level_List.ToArray());
 
             // 검색한 인덱스의 row 데이터를 모두 그리드 뷰에 넣어줌
-            //GridViewInData.Rows.Add(testdata[1]); 
             foreach (var SkillEffectResualtData in Search_SkillEffectLevelData)
             {
                 GridViewInData.Rows.Add(SkillEffectResualtData);
             }
-
-            GridViewInData.Columns.Remove("Column1");
 
             // 텍스트 박스에 Skill.xlsx 의 내용을 띄워줌 
             // 쓸데없는 변수 할당은 줄이고 리스트에서 바로 인덱스를 뽑아서 넣어줌. 컬럼 명으로 인덱스를 뽑으면 추후 컬럼 위치가 변경되어도 원하는 값을 가져올 수 있기 때문
@@ -524,6 +562,7 @@ namespace SkillDataTool
 
             }*/
 
+
             string fileName = @"SkillSearchData";
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
@@ -532,12 +571,57 @@ namespace SkillDataTool
 
                 ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add(fileName);
 
-                worksheet.Cells["A1"].LoadFromDataTable(GridViewInData, true);
+                /* for (int i = 0; i <= GridViewInData.Rows.Count; i++)
+                 {
+                     for(int j = 0; j <=  GridViewInData.Columns.Count; j++) 
+                     {
+                         if (int.TryParse(GridViewInData.Rows[i].ItemArray[j].ToString(), out int result))
+                         {
+                             //ConvertGridViewInData.Rows.Add(result);
 
+                             int data = result;
+                             ConvertGridViewInData.Rows[i].ItemArray[j] = data;
+
+                             ConvertGridViewInData.Rows.Add((int)data);
+                         }
+                         else
+                         {
+                             ConvertGridViewInData.Rows[i].ItemArray[j] = GridViewInData.Rows[i].ItemArray[j].ToString();
+                             //ConvertGridViewInData.Rows.Add(GridViewInData.Rows[i].ItemArray[j].ToString());
+                         }
+                     }
+                 }*/
+
+                // GridViewInData.Columns[0].DataType = typeof(int);
+
+
+
+
+
+                // Skill Effect Level Group 데이터를 넣어줌
+                worksheet.Cells["A1"].LoadFromDataTable(GridViewInData, true, OfficeOpenXml.Table.TableStyles.Light8);
+
+                // Skill Effect Operation  데이터를 넣어줌
+                string index = "A" + (GridViewInData.Rows.Count + 3).ToString();
+                worksheet.Cells[index].LoadFromDataTable(GridViewOperationData, true, OfficeOpenXml.Table.TableStyles.Light8);
+
+                // 표 선만들기
                 worksheet.Columns.AutoFit();
-                worksheet.Columns[0].Style.Border.ToString();
-               
 
+
+
+                // Title 구분 선
+                /*worksheet.Cells[1, 1, 1, GridViewInData.Columns.Count].Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                worksheet.Cells[1, 1, 1, GridViewInData.Columns.Count].Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                worksheet.Rows[1].Range.Style.Font.Bold = true;
+                // Right 선
+                worksheet.Cells[1, GridViewInData.Columns.Count, GridViewInData.Rows.Count +1, GridViewInData.Columns.Count].Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                // Bottom 선
+                worksheet.Cells[GridViewInData.Rows.Count +1, 1, GridViewInData.Rows.Count +1, GridViewInData.Columns.Count].Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                // Left 선
+                worksheet.Cells[1, 1, GridViewInData.Rows.Count + 1, GridViewInData.Columns.Count].Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;*/
+
+                // Save File Dialog 기본 세팅
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
                 saveFileDialog.Title = "저장 경로를 지정하세요.";
                 saveFileDialog.OverwritePrompt = true;
@@ -545,11 +629,13 @@ namespace SkillDataTool
                 saveFileDialog.InitialDirectory = @"D:\";
                 saveFileDialog.FileName = fileName + ".xlsx";
 
-                if(saveFileDialog.ShowDialog() == DialogResult.OK)
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     FileInfo fileInfo = new FileInfo(saveFileDialog.FileName);
                     excelPackage.SaveAs(fileInfo);
                 }
+
+                excelPackage.Dispose();
             }
         }
 
@@ -559,15 +645,15 @@ namespace SkillDataTool
             Excel.Workbook workbook = app.Workbooks.Add(true);
             Excel._Worksheet worksheet = workbook.Worksheets.get_Item(1) as Excel._Worksheet;
             worksheet.Name = "SaveData";
-            
+
             // 그리드 뷰에 데이터가 없을 경우 에러 팝업 출력
-            if(dgv.Rows.Count == 0 && dgv2.Rows.Count == 0)
+            if (dgv.Rows.Count == 0 && dgv2.Rows.Count == 0)
             {
                 MetroFramework.MetroMessageBox.Show(this, "출력할 데이터가 없습니다.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning, 100);
             }
 
             // 데이터 그리드 뷰 1 내용과 2 내용을 차례대로 넣어줌
-            for(int datarows = 0; datarows < dgv.Rows.Count; datarows++)
+            for (int datarows = 0; datarows < dgv.Rows.Count; datarows++)
             {
                 worksheet.Rows.Cells[datarows] = dgv.Rows[datarows].Cells;
             }
@@ -576,7 +662,7 @@ namespace SkillDataTool
 
             string filetype = fileName.Split('.')[1];
 
-            if(filetype == "xls" || filetype == "xlsx")
+            if (filetype == "xls" || filetype == "xlsx")
             {
                 workbook.SaveAs(fileName, Excel.XlFileFormat.xlWorkbookNormal, Type.Missing, Type.Missing, Type.Missing, Type.Missing,
                 Microsoft.Office.Interop.Excel.XlSaveAsAccessMode.xlExclusive, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing);
@@ -584,6 +670,8 @@ namespace SkillDataTool
 
             workbook.Close(Type.Missing, Type.Missing, Type.Missing);
             app.Quit();
+
+
             ReleaseExcelObject(app);
             ReleaseExcelObject(workbook);
             ReleaseExcelObject(worksheet);
@@ -595,7 +683,7 @@ namespace SkillDataTool
         {
             try
             {
-                if(obj != null)
+                if (obj != null)
                 {
                     Marshal.ReleaseComObject(obj);
                     obj = null;
@@ -613,5 +701,41 @@ namespace SkillDataTool
             }
 
         }
+
+        private void metroProgressBar1_Click(object sender, EventArgs e)
+        {
+            this.metroProgressBar1.Minimum = 0;
+            this.metroProgressBar1.Maximum = 100;
+            this.metroProgressBar1.Step = 1;
+            this.metroProgressBar1.Value = 0;
+
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+
+            for (int i = 0; i < 101; i++)
+            {
+                if (backgroundWorker1.CancellationPending)
+                {
+                    e.Cancel = true;
+                    break;
+                }
+
+                backgroundWorker1.ReportProgress(i);
+                //System.Threading.Thread.Sleep(2);
+
+            }
+
+            e.Result = 0;
+        }
+
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            metroProgressBar1.Value = e.ProgressPercentage;
+           
+        }
+
     }
 }
