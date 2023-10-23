@@ -25,6 +25,7 @@ using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Office2016.Drawing.Charts;
 using System.Collections.Immutable;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using System.Runtime.CompilerServices;
 
 namespace SkillDataTool
 {
@@ -47,6 +48,7 @@ namespace SkillDataTool
         private string SkillEffectOperation_Num = string.Empty;
 
         private int Level_Index = 0;
+        private int AllFile_Count = 0;
 
         // 받아올 엑셀 시트 이름
         private string Sheet_Name = "Table$";
@@ -67,7 +69,7 @@ namespace SkillDataTool
         private DataTable? ConvertGridViewInData = new DataTable();
 
 
-        private int timer_number = 0;
+
 
         public Form1()
         {
@@ -99,6 +101,7 @@ namespace SkillDataTool
                 FileName = string.Empty
             };
 
+
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 try
@@ -129,7 +132,7 @@ namespace SkillDataTool
                                 else
                                 {
                                     this.Skill = string.Format(this.Excel07Constring, str, 0);
-                                   //Workbook wb = new Workbook(this.Skill.ToString());
+                                    //Workbook wb = new Workbook(this.Skill.ToString());
                                 }
                             }
                             else if (str.Contains("SkillEffectGroup.xlsx"))
@@ -172,9 +175,6 @@ namespace SkillDataTool
                             {
                                 MetroFramework.MetroMessageBox.Show(this, "사용할 수 없는 문서입니다. 문서를 다시 확인해 주세요.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning, 100);
                             }
-
-                            int z = 0;
-
                         }
                     }
 
@@ -209,6 +209,8 @@ namespace SkillDataTool
                 MessageBox.Show("이미 로드가 완료된 데이터입니다.");
                 return;
             }
+
+            int z = 0;
 
 
             // backgroundWorker를 이용해서 progressbar를 실행시켜줌
@@ -356,7 +358,7 @@ namespace SkillDataTool
                                 {
                                     MessageBox.Show("중복되는 키 값이 있습니다. " + row.ItemArray[0].ToString() + " 데이터를 확인해 주세요.");
                                 }
-                            } 
+                            }
                             conn.Close();
                         }
                     }
@@ -368,6 +370,7 @@ namespace SkillDataTool
             {
                 this.button2.Text = "Complate";
                 backgroundWorker1.CancelAsync();
+
             }
 
 
@@ -481,6 +484,12 @@ namespace SkillDataTool
 
             List<string>? Level_List = new List<string>();
 
+            // skill Effect level data가 없을 경우 리턴
+            if (Search_SkillEffectLevelData == null)
+            {
+                return;
+            }
+
             // 레벨 단계가 없을수도 있으므로 예외처리 함
             if (Search_SkillEffectLevelData.Count != 0)
             {
@@ -491,6 +500,7 @@ namespace SkillDataTool
                 }
 
             }
+          
 
             // 콤보 박스에 레벨 추출한 레벨 리스트를 넣어줌
             this.comboBox1.Items.AddRange(Level_List.ToArray());
@@ -595,9 +605,6 @@ namespace SkillDataTool
                 // GridViewInData.Columns[0].DataType = typeof(int);
 
 
-
-
-
                 // Skill Effect Level Group 데이터를 넣어줌
                 worksheet.Cells["A1"].LoadFromDataTable(GridViewInData, true, OfficeOpenXml.Table.TableStyles.Light8);
 
@@ -607,7 +614,6 @@ namespace SkillDataTool
 
                 // 표 선만들기
                 worksheet.Columns.AutoFit();
-
 
 
                 // Title 구분 선
@@ -711,12 +717,17 @@ namespace SkillDataTool
 
         }
 
+
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
+            //nt max = (int)e.Argument;
+
             for (int i = 0; i < 101; i++)
             {
+
+                //nt progressPercentage = Convert.ToInt32(((double)i / max) * 100);
                 if (backgroundWorker1.CancellationPending)
                 {
                     e.Cancel = true;
@@ -726,6 +737,7 @@ namespace SkillDataTool
                 backgroundWorker1.ReportProgress(i);
                 //System.Threading.Thread.Sleep(2);
 
+
             }
 
             e.Result = 0;
@@ -734,8 +746,20 @@ namespace SkillDataTool
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             metroProgressBar1.Value = e.ProgressPercentage;
-           
+
         }
 
+        // nulltext를 비슷하게 구현
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (this.textBox1.Text != "")
+            {
+                this.label5.Visible = false;
+            }
+            else
+            {
+                this.label5.Visible = true;
+            }
+        }
     }
 }

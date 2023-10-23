@@ -48,6 +48,7 @@
             metroButton1 = new MetroFramework.Controls.MetroButton();
             metroProgressBar1 = new MetroFramework.Controls.MetroProgressBar();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            label5 = new Label();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
             SuspendLayout();
@@ -94,10 +95,12 @@
             // 
             // textBox1
             // 
+            textBox1.ForeColor = Color.Black;
             textBox1.Location = new Point(559, 95);
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(142, 23);
-            textBox1.TabIndex = 4;
+            textBox1.TabIndex = 20;
+            textBox1.TextChanged += textBox1_TextChanged;
             // 
             // button3
             // 
@@ -112,7 +115,7 @@
             // comboBox1
             // 
             comboBox1.FormattingEnabled = true;
-            comboBox1.Location = new Point(718, 124);
+            comboBox1.Location = new Point(718, 144);
             comboBox1.Name = "comboBox1";
             comboBox1.Size = new Size(69, 23);
             comboBox1.TabIndex = 6;
@@ -181,7 +184,7 @@
             // 
             label6.AutoSize = true;
             label6.Font = new Font("맑은 고딕", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            label6.Location = new Point(604, 126);
+            label6.Location = new Point(604, 146);
             label6.Name = "label6";
             label6.Size = new Size(108, 19);
             label6.TabIndex = 15;
@@ -220,12 +223,23 @@
             // 
             backgroundWorker1.DoWork += backgroundWorker1_DoWork;
             // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.ForeColor = SystemColors.ActiveCaption;
+            label5.Location = new Point(615, 99);
+            label5.Name = "label5";
+            label5.Size = new Size(83, 15);
+            label5.TabIndex = 19;
+            label5.Text = "ex) 10010013";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
             ClientSize = new Size(797, 713);
+            Controls.Add(label5);
             Controls.Add(metroProgressBar1);
             Controls.Add(metroButton1);
             Controls.Add(metroLabel1);
@@ -275,5 +289,6 @@
         private MetroFramework.Controls.MetroButton metroButton1;
         private MetroFramework.Controls.MetroProgressBar metroProgressBar1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private Label label5;
     }
 }
