@@ -49,6 +49,12 @@
             metroProgressBar1 = new MetroFramework.Controls.MetroProgressBar();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             label5 = new Label();
+            textBox4 = new TextBox();
+            label7 = new Label();
+            label8 = new Label();
+            textBox5 = new TextBox();
+            label9 = new Label();
+            textBox6 = new TextBox();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
             SuspendLayout();
@@ -132,15 +138,15 @@
             // 
             // textBox2
             // 
-            textBox2.Location = new Point(14, 289);
+            textBox2.Location = new Point(15, 220);
             textBox2.Name = "textBox2";
-            textBox2.Size = new Size(163, 23);
+            textBox2.Size = new Size(408, 23);
             textBox2.TabIndex = 8;
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(14, 271);
+            label2.Location = new Point(15, 202);
             label2.Name = "label2";
             label2.Size = new Size(65, 15);
             label2.TabIndex = 9;
@@ -148,7 +154,7 @@
             // 
             // textBox3
             // 
-            textBox3.Location = new Point(215, 289);
+            textBox3.Location = new Point(163, 284);
             textBox3.Name = "textBox3";
             textBox3.Size = new Size(144, 23);
             textBox3.TabIndex = 10;
@@ -156,7 +162,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(215, 271);
+            label3.Location = new Point(163, 266);
             label3.Name = "label3";
             label3.Size = new Size(56, 15);
             label3.TabIndex = 11;
@@ -203,9 +209,9 @@
             // metroButton1
             // 
             metroButton1.Font = new Font("맑은 고딕", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            metroButton1.Location = new Point(699, 284);
+            metroButton1.Location = new Point(654, 284);
             metroButton1.Name = "metroButton1";
-            metroButton1.Size = new Size(88, 28);
+            metroButton1.Size = new Size(133, 23);
             metroButton1.TabIndex = 17;
             metroButton1.Text = "SaveFile";
             metroButton1.UseSelectable = true;
@@ -233,12 +239,66 @@
             label5.TabIndex = 19;
             label5.Text = "ex) 10010013";
             // 
+            // textBox4
+            // 
+            textBox4.Location = new Point(316, 284);
+            textBox4.Name = "textBox4";
+            textBox4.Size = new Size(163, 23);
+            textBox4.TabIndex = 22;
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(316, 266);
+            label7.Name = "label7";
+            label7.Size = new Size(131, 15);
+            label7.TabIndex = 23;
+            label7.Text = "Combo Element Count";
+            // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new Point(485, 266);
+            label8.Name = "label8";
+            label8.Size = new Size(40, 15);
+            label8.TabIndex = 25;
+            label8.Text = "Target";
+            // 
+            // textBox5
+            // 
+            textBox5.Location = new Point(485, 284);
+            textBox5.Name = "textBox5";
+            textBox5.Size = new Size(163, 23);
+            textBox5.TabIndex = 24;
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.Location = new Point(15, 266);
+            label9.Name = "label9";
+            label9.Size = new Size(97, 15);
+            label9.TabIndex = 27;
+            label9.Text = "Skill Show Order";
+            // 
+            // textBox6
+            // 
+            textBox6.Location = new Point(15, 284);
+            textBox6.Name = "textBox6";
+            textBox6.Size = new Size(142, 23);
+            textBox6.TabIndex = 26;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
             ClientSize = new Size(797, 713);
+            Controls.Add(label9);
+            Controls.Add(textBox6);
+            Controls.Add(label8);
+            Controls.Add(textBox5);
+            Controls.Add(label7);
+            Controls.Add(textBox4);
             Controls.Add(label5);
             Controls.Add(metroProgressBar1);
             Controls.Add(metroButton1);
@@ -290,5 +350,11 @@
         private MetroFramework.Controls.MetroProgressBar metroProgressBar1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private Label label5;
+        private TextBox textBox4;
+        private Label label7;
+        private Label label8;
+        private TextBox textBox5;
+        private Label label9;
+        private TextBox textBox6;
     }
 }

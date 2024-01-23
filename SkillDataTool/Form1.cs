@@ -26,6 +26,7 @@ using DocumentFormat.OpenXml.Office2016.Drawing.Charts;
 using System.Collections.Immutable;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using System.Runtime.CompilerServices;
+using DocumentFormat.OpenXml.Office2013.Drawing.ChartStyle;
 
 namespace SkillDataTool
 {
@@ -74,7 +75,6 @@ namespace SkillDataTool
         public Form1()
         {
             InitializeComponent();
-
 
             backgroundWorker1.WorkerReportsProgress = true;
             backgroundWorker1.WorkerSupportsCancellation = true;
@@ -247,8 +247,10 @@ namespace SkillDataTool
                                     MessageBox.Show("중복되는 키 값이 있습니다. " + row.ItemArray[0].ToString() + " 데이터를 확인해 주세요.");
                                 }
                             }
-                            conn.Close();
                         }
+
+                        comm.Dispose();
+                        conn.Close();
                     }
                 }
             }
@@ -280,8 +282,10 @@ namespace SkillDataTool
                                     MessageBox.Show("중복되는 키 값이 있습니다. " + row.ItemArray[0].ToString() + " 데이터를 확인해 주세요.");
                                 }
                             }
-                            conn.Close();
                         }
+
+                        comm.Dispose();
+                        conn.Close();
                     }
                 }
             }
@@ -300,8 +304,28 @@ namespace SkillDataTool
                         adap.SelectCommand = comm;
                         adap.Fill(dataTable3);
 
-                        // 쓸모없는 마지막 컬럼 아예 삭제. 유동적으로 바뀌는 것이 아니므로 그냥 19번 인덱스를 고정하여 넣어주었음.
-                        dataTable3.Columns.RemoveAt(19);
+
+                        // 쓸모없는 마지막 컬럼 아예 삭제. 데이터를 넣으면서 실수를 많이하여 빈 컬럼이 자꾸 생김
+                        for (int i = dataTable3.Columns.Count - 1; i >= 0; i--)
+                        {
+                            for (int j = 0; j < dataTable3.Rows.Count; j++)
+                            {
+                                if (dataTable3.Rows[j][i].ToString() == "")
+                                {
+                                    if (j == dataTable3.Rows.Count - 1)
+                                    {
+                                        dataTable3.Columns.RemoveAt(i);
+                                    }
+                                    continue;
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+                        }
+
+
 
                         foreach (DataRow row in dataTable3.Rows)
                         {
@@ -319,8 +343,10 @@ namespace SkillDataTool
                                     SkillEffectLevelGroupData[row.ItemArray[0].ToString()] = new List<object[]> { row.ItemArray };
                                 }
                             }
-                            conn.Close();
                         }
+
+                        comm.Dispose();
+                        conn.Close();
                     }
                 }
             }
@@ -339,11 +365,24 @@ namespace SkillDataTool
                         adap.SelectCommand = comm;
                         adap.Fill(dataTable4);
 
-                        // 빈 컬럼을 아예 지워줌 (W, X, Y, Z, AA 총 5개 컬럼)
-                        for (int i = 23; i < 28; i++)
+                        // 쓸모없는 마지막 컬럼 아예 삭제. 데이터를 넣으면서 실수를 많이하여 빈 컬럼이 자꾸 생김
+                        for (int i = dataTable4.Columns.Count - 1; i >= 0; i--)
                         {
-                            string index = "F" + i;
-                            dataTable4.Columns.Remove(index);
+                            for (int j = 0; j < dataTable4.Rows.Count; j++)
+                            {
+                                if (dataTable4.Rows[j][i].ToString() == "")
+                                {
+                                    if (j == dataTable4.Rows.Count - 1)
+                                    {
+                                        dataTable4.Columns.RemoveAt(i);
+                                    }
+                                    continue;
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
                         }
 
                         foreach (DataRow row in dataTable4.Rows)
@@ -359,8 +398,10 @@ namespace SkillDataTool
                                     MessageBox.Show("중복되는 키 값이 있습니다. " + row.ItemArray[0].ToString() + " 데이터를 확인해 주세요.");
                                 }
                             }
-                            conn.Close();
                         }
+
+                        comm.Dispose();
+                        conn.Close();
                     }
                 }
             }
@@ -372,8 +413,6 @@ namespace SkillDataTool
                 backgroundWorker1.CancelAsync();
 
             }
-
-
 
         }
 
@@ -484,37 +523,59 @@ namespace SkillDataTool
 
             List<string>? Level_List = new List<string>();
 
-            // skill Effect level data가 없을 경우 리턴
+            // 레벨 단계가 없을수도 있으므로 예외처리 함
             if (Search_SkillEffectLevelData == null)
             {
-                return;
+                this.dataGridView1.Hide();
             }
-
-            // 레벨 단계가 없을수도 있으므로 예외처리 함
-            if (Search_SkillEffectLevelData.Count != 0)
+            else
             {
-                // SkillEffectLevelGroup의 레벨 리스트를 콤보박스에 넣어줌
                 foreach (var item in Search_SkillEffectLevelData)
                 {
                     Level_List.Add(item[ItemDataIndex[0].ToList().IndexOf("레벨")].ToString());
                 }
 
+                // 콤보 박스에 레벨 추출한 레벨 리스트를 넣어줌
+                this.comboBox1.Items.AddRange(Level_List.ToArray());
+
+                // 검색한 인덱스의 row 데이터를 모두 그리드 뷰에 넣어줌
+                foreach (var SkillEffectResualtData in Search_SkillEffectLevelData)
+                {
+                    GridViewInData.Rows.Add(SkillEffectResualtData);
+                }
+
+                this.dataGridView1.Show();
             }
-          
+
+            // 레벨 단계가 없을수도 있으므로 예외처리 함
+            /*if (Search_SkillEffectLevelData.Count != 0)
+             {
+                 // SkillEffectLevelGroup의 레벨 리스트를 콤보박스에 넣어줌
+                 foreach (var item in Search_SkillEffectLevelData)
+                 {
+                     Level_List.Add(item[ItemDataIndex[0].ToList().IndexOf("레벨")].ToString());
+                 }
+
+             }*/
+
 
             // 콤보 박스에 레벨 추출한 레벨 리스트를 넣어줌
-            this.comboBox1.Items.AddRange(Level_List.ToArray());
+            //this.comboBox1.Items.AddRange(Level_List.ToArray());
 
             // 검색한 인덱스의 row 데이터를 모두 그리드 뷰에 넣어줌
-            foreach (var SkillEffectResualtData in Search_SkillEffectLevelData)
+            /*foreach (var SkillEffectResualtData in Search_SkillEffectLevelData)
             {
                 GridViewInData.Rows.Add(SkillEffectResualtData);
-            }
+            }*/
 
             // 텍스트 박스에 Skill.xlsx 의 내용을 띄워줌 
             // 쓸데없는 변수 할당은 줄이고 리스트에서 바로 인덱스를 뽑아서 넣어줌. 컬럼 명으로 인덱스를 뽑으면 추후 컬럼 위치가 변경되어도 원하는 값을 가져올 수 있기 때문
             this.textBox2.Text = Search_SkillData[SkillIndexList.IndexOf("skill_name")].ToString();
             this.textBox3.Text = Search_SkillData[SkillIndexList.IndexOf("skill_cooltime")].ToString();
+            this.textBox4.Text = Search_SkillData[SkillIndexList.IndexOf("combo_attribute_element_count")].ToString();
+            this.textBox5.Text = Search_SkillData[SkillIndexList.IndexOf("target")].ToString();
+            this.textBox6.Text = Search_SkillData[SkillIndexList.IndexOf("skill_show_order")].ToString();
+
 
             // 데이터 그리드 뷰에 모아둔 데이터를 띄워 줌
             this.dataGridView1.DataSource = GridViewInData;
@@ -761,5 +822,6 @@ namespace SkillDataTool
                 this.label5.Visible = true;
             }
         }
+
     }
 }
