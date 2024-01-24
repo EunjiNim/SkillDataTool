@@ -27,6 +27,7 @@ using System.Collections.Immutable;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using System.Runtime.CompilerServices;
 using DocumentFormat.OpenXml.Office2013.Drawing.ChartStyle;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace SkillDataTool
 {
@@ -71,7 +72,6 @@ namespace SkillDataTool
 
 
 
-
         public Form1()
         {
             InitializeComponent();
@@ -81,11 +81,17 @@ namespace SkillDataTool
             backgroundWorker1.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
             backgroundWorker1.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
 
+            // 인덱스 입력 TextBox에 Placeholer Text를 설정해 줌
+            this.textBox1.PlaceholderText = "ex) 10010013";
+  
+
         }
+
 
         private void Form1_Load(object sender, EventArgs e)
         {
             this.Text = "Skill Search Tool";
+
         }
 
         // 엑셀 파일 오픈 버튼 
@@ -210,9 +216,6 @@ namespace SkillDataTool
                 return;
             }
 
-            int z = 0;
-
-
             // backgroundWorker를 이용해서 progressbar를 실행시켜줌
             backgroundWorker1.RunWorkerAsync();
 
@@ -229,6 +232,8 @@ namespace SkillDataTool
                         conn.Open();
                         adap.SelectCommand = comm;
                         adap.Fill(datatable1);
+
+
 
                         foreach (DataRow row in datatable1.Rows)
                         {
@@ -783,9 +788,9 @@ namespace SkillDataTool
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            //nt max = (int)e.Argument;
+            //int count = (int)e.Argument;
 
-            for (int i = 0; i < 101; i++)
+            for (int i = 1; i < 100; i++)
             {
 
                 //nt progressPercentage = Convert.ToInt32(((double)i / max) * 100);
@@ -808,19 +813,6 @@ namespace SkillDataTool
         {
             metroProgressBar1.Value = e.ProgressPercentage;
 
-        }
-
-        // nulltext를 비슷하게 구현
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-            if (this.textBox1.Text != "")
-            {
-                this.label5.Visible = false;
-            }
-            else
-            {
-                this.label5.Visible = true;
-            }
         }
 
     }

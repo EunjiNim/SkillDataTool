@@ -48,13 +48,13 @@
             metroButton1 = new MetroFramework.Controls.MetroButton();
             metroProgressBar1 = new MetroFramework.Controls.MetroProgressBar();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            label5 = new Label();
             textBox4 = new TextBox();
             label7 = new Label();
             label8 = new Label();
             textBox5 = new TextBox();
             label9 = new Label();
             textBox6 = new TextBox();
+            backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
             SuspendLayout();
@@ -106,7 +106,6 @@
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(142, 23);
             textBox1.TabIndex = 20;
-            textBox1.TextChanged += textBox1_TextChanged;
             // 
             // button3
             // 
@@ -120,6 +119,7 @@
             // 
             // comboBox1
             // 
+            comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBox1.FormattingEnabled = true;
             comboBox1.Location = new Point(718, 144);
             comboBox1.Name = "comboBox1";
@@ -229,16 +229,6 @@
             // 
             backgroundWorker1.DoWork += backgroundWorker1_DoWork;
             // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.ForeColor = SystemColors.ActiveCaption;
-            label5.Location = new Point(615, 99);
-            label5.Name = "label5";
-            label5.Size = new Size(83, 15);
-            label5.TabIndex = 19;
-            label5.Text = "ex) 10010013";
-            // 
             // textBox4
             // 
             textBox4.Location = new Point(316, 284);
@@ -299,7 +289,6 @@
             Controls.Add(textBox5);
             Controls.Add(label7);
             Controls.Add(textBox4);
-            Controls.Add(label5);
             Controls.Add(metroProgressBar1);
             Controls.Add(metroButton1);
             Controls.Add(metroLabel1);
@@ -349,12 +338,12 @@
         private MetroFramework.Controls.MetroButton metroButton1;
         private MetroFramework.Controls.MetroProgressBar metroProgressBar1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
-        private Label label5;
         private TextBox textBox4;
         private Label label7;
         private Label label8;
         private TextBox textBox5;
         private Label label9;
         private TextBox textBox6;
+        private System.ComponentModel.BackgroundWorker backgroundWorker2;
     }
 }
