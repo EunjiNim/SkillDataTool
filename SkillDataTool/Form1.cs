@@ -83,7 +83,6 @@ namespace SkillDataTool
 
             // 인덱스 입력 TextBox에 Placeholer Text를 설정해 줌
             this.textBox1.PlaceholderText = "ex) 10010013";
-  
 
         }
 
@@ -815,5 +814,12 @@ namespace SkillDataTool
 
         }
 
+        private void searchTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+            {
+                this.button3.PerformClick();
+            }
+        }
     }
 }

@@ -106,6 +106,7 @@
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(142, 23);
             textBox1.TabIndex = 20;
+            textBox1.KeyDown += searchTextBox_KeyDown;
             // 
             // button3
             // 
