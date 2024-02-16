@@ -67,7 +67,6 @@ namespace SkillDataTool
         private DataTable? GridViewInData = new DataTable();
         private DataTable? GridViewOperationData = new DataTable();
 
-
         private DataTable? ConvertGridViewInData = new DataTable();
 
 
@@ -80,9 +79,12 @@ namespace SkillDataTool
             backgroundWorker1.WorkerSupportsCancellation = true;
             backgroundWorker1.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
             backgroundWorker1.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
+            backgroundWorker1.RunWorkerCompleted += new RunWorkerCompletedEventHandler(backgroundWorker1_RunWorkerCompleted);
+      
 
             // 인덱스 입력 TextBox에 Placeholer Text를 설정해 줌
             this.textBox1.PlaceholderText = "ex) 10010013";
+
 
         }
 
@@ -231,8 +233,6 @@ namespace SkillDataTool
                         conn.Open();
                         adap.SelectCommand = comm;
                         adap.Fill(datatable1);
-
-
 
                         foreach (DataRow row in datatable1.Rows)
                         {
@@ -443,6 +443,7 @@ namespace SkillDataTool
             this.comboBox1.Items.Clear();
             GridViewInData.Clear();
             GridViewOperationData.Clear();
+
             // 콤보박스 텍스트 리셋
             this.comboBox1.ResetText();
 
@@ -525,8 +526,7 @@ namespace SkillDataTool
                 this.dataGridView2.Hide();
             }
 
-            List<string>? Level_List = new List<string>();
-
+            List<object>? Level_List = new List<object>();
             // 레벨 단계가 없을수도 있으므로 예외처리 함
             if (Search_SkillEffectLevelData == null)
             {
@@ -534,13 +534,21 @@ namespace SkillDataTool
             }
             else
             {
+                // 모든 데이터를 보여주어야 하므로 인덱스를 넣기전에 0번에 All을 넣어줌
+                Level_List.Add("All");
+
+                // SkillEffectLevelGroup의 레벨 리스트를 콤보박스에 넣어줌
                 foreach (var item in Search_SkillEffectLevelData)
                 {
-                    Level_List.Add(item[ItemDataIndex[0].ToList().IndexOf("레벨")].ToString());
+                    // 리스트의 레벨 숫자를 인덱스로 서치해야 하므로 Int로 형변환을 해준 후 저장해 줌
+                    int index = Convert.ToInt16(item[ItemDataIndex[0].ToList().IndexOf("레벨")].ToString());
+                    Level_List.Add(index);
                 }
 
                 // 콤보 박스에 레벨 추출한 레벨 리스트를 넣어줌
                 this.comboBox1.Items.AddRange(Level_List.ToArray());
+                this.comboBox1.SelectedIndex = 0;
+
 
                 // 검색한 인덱스의 row 데이터를 모두 그리드 뷰에 넣어줌
                 foreach (var SkillEffectResualtData in Search_SkillEffectLevelData)
@@ -551,27 +559,6 @@ namespace SkillDataTool
                 this.dataGridView1.Show();
             }
 
-            // 레벨 단계가 없을수도 있으므로 예외처리 함
-            /*if (Search_SkillEffectLevelData.Count != 0)
-             {
-                 // SkillEffectLevelGroup의 레벨 리스트를 콤보박스에 넣어줌
-                 foreach (var item in Search_SkillEffectLevelData)
-                 {
-                     Level_List.Add(item[ItemDataIndex[0].ToList().IndexOf("레벨")].ToString());
-                 }
-
-             }*/
-
-
-            // 콤보 박스에 레벨 추출한 레벨 리스트를 넣어줌
-            //this.comboBox1.Items.AddRange(Level_List.ToArray());
-
-            // 검색한 인덱스의 row 데이터를 모두 그리드 뷰에 넣어줌
-            /*foreach (var SkillEffectResualtData in Search_SkillEffectLevelData)
-            {
-                GridViewInData.Rows.Add(SkillEffectResualtData);
-            }*/
-
             // 텍스트 박스에 Skill.xlsx 의 내용을 띄워줌 
             // 쓸데없는 변수 할당은 줄이고 리스트에서 바로 인덱스를 뽑아서 넣어줌. 컬럼 명으로 인덱스를 뽑으면 추후 컬럼 위치가 변경되어도 원하는 값을 가져올 수 있기 때문
             this.textBox2.Text = Search_SkillData[SkillIndexList.IndexOf("skill_name")].ToString();
@@ -580,36 +567,48 @@ namespace SkillDataTool
             this.textBox5.Text = Search_SkillData[SkillIndexList.IndexOf("target")].ToString();
             this.textBox6.Text = Search_SkillData[SkillIndexList.IndexOf("skill_show_order")].ToString();
 
-
             // 데이터 그리드 뷰에 모아둔 데이터를 띄워 줌
             this.dataGridView1.DataSource = GridViewInData;
             this.dataGridView1.AllowUserToOrderColumns = false;
 
-            // 쓸데없이 나오는 마지막 ROW를 감춤
+            // 쓸데없이 나오는 마지막 row를 감춤
             this.dataGridView2.AllowUserToAddRows = false;
 
         }
 
-        // Skill Effect Leve Group 레벨 별 정보 출력
+        // Skill Effect Level Group 레벨 별 정보 출력
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int Skill_Level = 0;
+            int Skill_Level = comboBox1.SelectedIndex;
 
-            // 콤보박스의 string 형식을 int로 변환해 주고 인덱스를 맞춰주기 위해 1을 뺌
-            Skill_Level = Convert.ToInt16(comboBox1.Text) - 1;
+            // 리스트 초기화        
+            this.dataGridView1.DataSource = null;
 
-            // 리스트 초기화
-            GridViewInData.Clear();
+            if (Skill_Level == 0)
+            {
+                // 인덱스가 All일 경우 기존의 모든 데이터를 뿌려줌
+                this.dataGridView1.DataSource = GridViewInData;
+            }
+            else
+            {
+                // 인덱스가 1 이상일 경우 해당 인덱스의 데이터만 출력해 줌
+                List<object[]> Search_SkillEffectLevelData = new List<object[]>();
+                SkillEffectLevelGroupData.TryGetValue(SkillEffect_Num, out Search_SkillEffectLevelData);
 
-            List<object[]> Search_SkillEffectLevelData = new List<object[]>();
-            SkillEffectLevelGroupData.TryGetValue(SkillEffect_Num, out Search_SkillEffectLevelData);
+                // 새로 생성된 데이터 테이블의 컬럼을 맞춰줌
+                DataTable SearchGridViewData = new DataTable();
+                foreach (var list in GridViewInData.Columns)
+                {
+                    SearchGridViewData.Columns.Add(list.ToString());
+                }
 
-            // 특정 레벨의 정보만 출력해 줌
-            GridViewInData.Rows.Add(Search_SkillEffectLevelData[Skill_Level]);
-            this.dataGridView1.DataSource = GridViewInData;
+                // 특정 레벨의 정보만 출력해 줌
+                SearchGridViewData.Rows.Add(Search_SkillEffectLevelData[Skill_Level - 1].ToArray());
+                this.dataGridView1.DataSource = SearchGridViewData;
+            }
         }
 
-        // 파일 저장 버튼
+        // 파일 저장 기능 구현 함수
         private void metroButton1_Click(object sender, EventArgs e)
         {
             /*string filePath = string.Empty;
@@ -789,10 +788,13 @@ namespace SkillDataTool
 
             //int count = (int)e.Argument;
 
-            for (int i = 1; i < 100; i++)
+
+
+
+            for (int i = 0; i < 101; i++)
             {
 
-                //nt progressPercentage = Convert.ToInt32(((double)i / max) * 100);
+                //int progressPercentage = Convert.ToInt32(((double)i / max) * 100);
                 if (backgroundWorker1.CancellationPending)
                 {
                     e.Cancel = true;
@@ -801,8 +803,6 @@ namespace SkillDataTool
 
                 backgroundWorker1.ReportProgress(i);
                 //System.Threading.Thread.Sleep(2);
-
-
             }
 
             e.Result = 0;
@@ -811,12 +811,24 @@ namespace SkillDataTool
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             metroProgressBar1.Value = e.ProgressPercentage;
-
         }
 
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if(e.Error != null)
+            {
+                MessageBox.Show(e.Error.Message, "Error");
+                return;
+            }
+
+            
+        }
+
+
+        // 인덱스 입력 후 엔터키를 눌러도 함수가 호출될 수 있도록 설정
         private void searchTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode == Keys.Enter)
+            if (e.KeyCode == Keys.Enter)
             {
                 this.button3.PerformClick();
             }

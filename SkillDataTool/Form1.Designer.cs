@@ -54,7 +54,6 @@
             textBox5 = new TextBox();
             label9 = new Label();
             textBox6 = new TextBox();
-            backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
             SuspendLayout();
@@ -232,7 +231,7 @@
             // 
             // textBox4
             // 
-            textBox4.Location = new Point(316, 284);
+            textBox4.Location = new Point(313, 284);
             textBox4.Name = "textBox4";
             textBox4.Size = new Size(163, 23);
             textBox4.TabIndex = 22;
@@ -240,7 +239,7 @@
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(316, 266);
+            label7.Location = new Point(313, 266);
             label7.Name = "label7";
             label7.Size = new Size(131, 15);
             label7.TabIndex = 23;
@@ -249,7 +248,7 @@
             // label8
             // 
             label8.AutoSize = true;
-            label8.Location = new Point(485, 266);
+            label8.Location = new Point(482, 266);
             label8.Name = "label8";
             label8.Size = new Size(40, 15);
             label8.TabIndex = 25;
@@ -257,7 +256,7 @@
             // 
             // textBox5
             // 
-            textBox5.Location = new Point(485, 284);
+            textBox5.Location = new Point(482, 284);
             textBox5.Name = "textBox5";
             textBox5.Size = new Size(163, 23);
             textBox5.TabIndex = 24;
@@ -345,6 +344,5 @@
         private TextBox textBox5;
         private Label label9;
         private TextBox textBox6;
-        private System.ComponentModel.BackgroundWorker backgroundWorker2;
     }
 }
